@@ -16,12 +16,14 @@ INTERVAL = 1000  #unit ms
 LEN =64
 IP=""
 PORT=0
+MAX_TEST_COUNT=3
 
 count=0
 count_of_received=0
 rtt_sum=0.0
 rtt_min=99999999.0
 rtt_max=0.0
+fail_count=0
 
 def signal_handler(signal, frame):
 	if count!=0 and count_of_received!=0:
@@ -63,13 +65,13 @@ if len(sys.argv) != 3 and len(sys.argv)!=4 :
 IP=sys.argv[1]
 PORT=int(sys.argv[2])
 
-is_ipv6=0;
+is_ipv6=0
 
 if is_domain(IP):
 	IP = socket.gethostbyname(IP)
 
 if IP.find(":")!=-1:
-	is_ipv6=1;
+	is_ipv6=1
 
 if len(sys.argv)==4:
 	exec(sys.argv[3])
@@ -92,6 +94,8 @@ print("UDPping %s via port %d with %d bytes of payload"% (IP,PORT,LEN))
 sys.stdout.flush()
 
 while True:
+	if count >= MAX_TEST_COUNT:
+		break
 	payload= random_string(LEN)
 	sock.sendto(payload.encode(), (IP, PORT))
 	time_of_send=time.time()
@@ -104,7 +108,7 @@ while True:
 		if timeout <0:
 			break
 		#print "timeout=",timeout
-		sock.settimeout(timeout);
+		sock.settimeout(timeout)
 		try:
 			recv_data,addr = sock.recvfrom(65536)
 			if recv_data== payload.encode()  and addr[0]==IP and addr[1]==PORT:
@@ -125,8 +129,12 @@ while True:
 		rtt_min=min(rtt_min,rtt)
 	else:
 		print("Request timed out")
+		fail_count+=1
 		sys.stdout.flush()
 
 	time_remaining=deadline-time.time()
 	if(time_remaining>0):
 		time.sleep(time_remaining)
+if fail_count >= MAX_TEST_COUNT:
+	exit(1)
+
