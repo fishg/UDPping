@@ -16,7 +16,7 @@ INTERVAL = 1000  #unit ms
 LEN =64
 IP=""
 PORT=0
-MAX_TEST_COUNT=3
+MAX_TEST_COUNT=2
 
 count=0
 count_of_received=0
