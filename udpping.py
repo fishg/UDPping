@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from __future__ import print_function 
+from __future__ import print_function
 
 import socket
 import sys
@@ -10,6 +10,7 @@ import random
 import signal
 import sys
 import os
+import re
 
 INTERVAL = 1000  #unit ms
 LEN =64
@@ -35,6 +36,11 @@ def signal_handler(signal, frame):
 def random_string(length):
         return ''.join(random.choice(string.ascii_letters+ string.digits ) for m in range(length))
 
+def is_domain(domain):
+        domain_regex = re.compile(
+            r'(?:[A-Z0-9_](?:[A-Z0-9-_]{0,247}[A-Z0-9])?\.)+(?:[A-Z]{2,6}|[A-Z0-9-]{2,}(?<!-))\Z', re.IGNORECASE)
+        return True if domain_regex.match(domain) else False
+
 if len(sys.argv) != 3 and len(sys.argv)!=4 :
 	print(""" usage:""")
 	print("""   this_program <dest_ip> <dest_port>""")
@@ -59,12 +65,15 @@ PORT=int(sys.argv[2])
 
 is_ipv6=0;
 
+if is_domain(IP):
+	IP = socket.gethostbyname(IP)
+
 if IP.find(":")!=-1:
 	is_ipv6=1;
 
 if len(sys.argv)==4:
 	exec(sys.argv[3])
-	
+
 if LEN<5:
 	print("LEN must be >=5")
 	exit()
@@ -89,7 +98,7 @@ while True:
 	deadline = time.time() + INTERVAL/1000.0
 	received=0
 	rtt=0.0
-	
+
 	while True:
 		timeout=deadline - time.time()
 		if timeout <0:
@@ -121,4 +130,3 @@ while True:
 	time_remaining=deadline-time.time()
 	if(time_remaining>0):
 		time.sleep(time_remaining)
-
