@@ -16,7 +16,7 @@ INTERVAL = 1000  #unit ms
 LEN =64
 IP=""
 PORT=0
-MAX_TEST_COUNT=2
+MAX_TEST_COUNT=1
 
 count=0
 count_of_received=0
@@ -56,7 +56,7 @@ if len(sys.argv) != 3 and len(sys.argv)!=4 :
 	print()
 	print(" examples:")
 	print("   ./udpping.py 44.55.66.77 4000")
-	print('   ./udpping.py 44.55.66.77 4000 "LEN=400;INTERVAL=2000"')
+	print('   ./udpping.py 44.55.66.77 4000 "LEN=400;INTERVAL=2000;MAX_TEST_COUNT=1"')
 	print("   ./udpping.py fe80::5400:ff:aabb:ccdd 4000")
 	print()
 
